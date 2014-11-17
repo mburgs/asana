@@ -1,0 +1,11 @@
+##Asana API
+
+Provides a fluid interface for interacting with the Asana API.
+Some code borrowed from https://github.com/pandemicsyn/asana
+
+##TODO
+- finish README
+- implement save()
+- implement Section (needs custom result_builder)
+- unit testing
+- docs
