@@ -117,3 +117,25 @@ class Section(Entity):
 	@classmethod
 	def _get_api_endpoint(cls):
 		return Task._get_api_endpoint()
+
+	@classmethod
+	def _build_results(cls, query, data):
+		current = None
+		filling = False
+		ret = []
+
+		for ent in data:
+			if cls._is_section(ent):
+				if cls._filter(ent, query):
+					if current:
+						ret.append(current)
+
+					current = cls(ent)
+
+	@staticmethod
+	def _is_section(ent):
+		"""Checks whether a dict from the API is a section Task
+
+		:param ent: The dict to check
+		"""
+		return ent['name'][-1] == ':'
