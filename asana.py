@@ -119,7 +119,7 @@ class AsanaAPI(object):
             print '{} {}'.format(method.upper(), target)
             for arg in ['params', 'data', 'files']:
                 if kwargs.get(arg):
-                    print '{} => {}'.format(arg, kwargs[arg])
+                    print '\t{} => {}'.format(arg, kwargs[arg])
 
         r = getattr(requests, method)(target, auth=(self.apikey, ""), **kwargs)
         if self._ok_status(r.status_code) and r.status_code is not 404:
@@ -166,14 +166,17 @@ class Cache(object):
         self._cache = {}
 
     def has(self, method, target, **kwargs):
-        item = self._cache.get(self._get_key(method, target, **kwargs))
+        key = self._get_key(method, target, **kwargs)
+        item = self._cache.get(key)
 
         if item:
-            if (
-                not self.cachetime or
-                time.time() - self.cachetime <= item['createTime']
-            ):
+            if not self.cachetime:
                 return True
+
+            if time.time() - self.cachetime <= item['createTime']:
+                return True
+            else:
+                del self._cache[key]
 
         return False
 
