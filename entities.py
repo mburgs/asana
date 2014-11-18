@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 class EntityException(Exception):
     """Wrap entity specific errors"""
     pass
@@ -8,12 +10,13 @@ class Entity(object):
 
 	_filter_keys = []
 
-	def __init__(self, apiOrData):
-		self._data = apiOrData
-
-		self._dirty = set()
-
+	def __init__(self, data):
+		self._init(data)
 		self._ready = True
+
+	def _init(self, data):
+		self._data = data
+		self._dirty = set()
 
 	@classmethod
 	def set_api(cls, api):
@@ -31,8 +34,18 @@ class Entity(object):
 		"""By default use name of class for endpoint"""
 		return cls.__name__.lower() + 's'
 
+	def _get_item_url(self):
+		if not self.id:
+			raise EntityException('Cannot get item URL without id set')
+
+		return '/'.join([self._get_api_endpoint(), str(self.id)])
+
 	@classmethod
 	def find(cls, query={}):
+		return cls._run_find(cls._get_api_endpoint(), query)
+
+	@classmethod
+	def _run_find(cls, target, query):
 		params = {} #params that are part of the request
 
 		if cls._filter_keys:
@@ -41,7 +54,7 @@ class Entity(object):
 					params[key] = query[key]
 					del query[key]
 
-		data = cls._get_api().get(cls._get_api_endpoint(), params=params)
+		data = cls._get_api().get(target, params=params)
 
 		return cls._build_result(query, data)
 
@@ -68,20 +81,30 @@ class Entity(object):
 				return False
 		return True
 
+	def load(self):
+		self.init(self._get_api().get(self._get_item_url))
+
+	def get_subitem(self, subitem_class, query={}):
+		target = '/'.join([self._get_item_url(), subitem_class._get_api_endpoint()])
+
+		return subitem_class._run_find(target, query)
+
 	def save(self):
 		"""Handles both creating and updating content
 		The assumption is if there is no ID set this is
 		a creation request"""
 
-		pass
+		if self.id:
+			#performing update - put
+			pass
+		else:
+			#performing create - post
+			pass
 
 	def delete(self):
 		"""Deletes the specified resource. The ID must be set"""
 
-		if not self.id:
-			raise EntityException('Cannot delete without an ID set')
-
-		self.get_api().delete('/'.join([self._get_api_endpoint(), self.id]))
+		self.get_api().delete(self._get_item_url())
 
 	def __getattr__(self, attr):
 
@@ -107,9 +130,31 @@ class Entity(object):
 class Project(Entity):
 	pass
 
-class Task(Entity):
-	_filter_keys = ['project', 'assignee']
+class User(Entity):
 	pass
+
+class Tag(Entity):
+	pass
+
+class Task(Entity):
+	_filter_keys = [
+		'project', 'assignee', 'workspace', 'completed_since', 'modified_since'
+	]
+
+	def get_created_by(self):
+		"""Gets the User that created this item - currently works by finding
+		the first story that contains the word 'added'"""
+
+		return User(self.get_subitem(Story, {
+			'type': 'system',
+			'text':	lambda t: 'added' in t
+		})[0].created_by)
+
+class Story(Entity):
+
+	@classmethod
+	def _get_api_endpoint(cls):
+		return 'stories'
 
 class Section(Entity):
 	_filter_keys = Task._filter_keys
@@ -119,18 +164,27 @@ class Section(Entity):
 		return Task._get_api_endpoint()
 
 	@classmethod
-	def _build_results(cls, query, data):
+	def _build_result(cls, query, data):
 		current = None
 		filling = False
 		ret = []
 
 		for ent in data:
 			if cls._is_section(ent):
-				if cls._filter(ent, query):
-					if current:
-						ret.append(current)
+				if current:
+					ret.append(cls(current))
+					current = None
 
-					current = cls(ent)
+				if cls._filter(ent, query):
+					current = ent
+					current['subtasks'] = []
+			elif current:
+				current['subtasks'].append(Task(ent))
+
+		if current:
+			ret.append(cls(current))
+
+		return ret
 
 	@staticmethod
 	def _is_section(ent):
@@ -139,3 +193,6 @@ class Section(Entity):
 		:param ent: The dict to check
 		"""
 		return ent['name'][-1] == ':'
+
+	def get_subitem(self, subclass, query):
+		raise EntityException('This function does not apply to sections, try the subtasks property')
