@@ -26,8 +26,14 @@ class AsanaAPI(object):
     itself see: http://developer.asana.com/documentation/
     """
 
-    def __init__(self, apikey, debug=False):
+    def __init__(self, apikey, debug=False, cache=None):
         self.debug = debug
+
+        if cache:
+            self.cache = Cache(cache)
+        else:
+            self.cache = False
+
         self.asana_url = "https://app.asana.com/api"
         self.api_version = "1.0"
         self.aurl = "/".join([self.asana_url, self.api_version])
@@ -45,8 +51,6 @@ class AsanaAPI(object):
         """ Handle exceptions
 
         :param r: request object
-        :param api_target: API URI path for requests
-        :param data: payload
         :returns: 1 if exception was 429 (rate limit exceeded), otherwise, -1
         """
         if self.debug:
@@ -74,25 +78,14 @@ class AsanaAPI(object):
 
         :param api_target: API URI path for request
         """
-        target = "/".join([self.aurl, api_target])
-        if self.debug:
-            print "-> Calling: %s" % target
-
-            if 'params' in kwargs:
-                print "-> Params: %s" % kwargs['params']
-
-        return self._do_request('get', target, **kwargs)
+        return self._do_request('get', api_target, **kwargs)
 
     def delete(self, api_target, **kwargs):
         """Peform a DELETE request
 
         :param api_target: API URI path for request
         """
-        target = "/".join([self.aurl, api_target])
-        if self.debug:
-            print "-> Calling: %s" % target
-
-        return self._do_request('delete', target, **kwargs)
+        return self._do_request('delete', api_target, **kwargs)
 
     def post(self, api_target, **kwargs):
         """Peform a POST request
@@ -101,40 +94,40 @@ class AsanaAPI(object):
         :param data: POST payload
         :param files: Optional file to upload
         """
-        target = "/".join([self.aurl, api_target])
-        if self.debug:
-            print "-> Posting to: %s" % target
-            if 'data' in kwargs:
-                print "-> Post payload:"
-                pprint(kwargs['data'])
-            if 'files' in kwargs:
-                print "-> Posting file:"
-                pprint(kwargs['files'])
-
-        return self._do_request('post', target, **kwargs)
+        return self._do_request('post', api_target, **kwargs)
 
     def put(self, api_target, **kwargs):
         """Peform a PUT request
 
         :param api_target: API URI path for request
         :param data: PUT payload
-        """
-        target = "/".join([self.aurl, api_target])
-        if self.debug:
-            print "-> PUTting to: %s" % target
-            print "-> PUT payload:"
-            pprint(kwargs['data'])
-        
-        return self._do_request('put', target, **kwargs)
+        """        
+        return self._do_request('put', api_target, **kwargs)
 
     def _do_request(self, method, target, **kwargs):
+
+        target = "/".join([self.aurl, target])
+
+        if self.cache:
+            if self.cache.has(method, target, **kwargs):
+                if self.debug:
+                    print 'Loading {} {} from cache'.format(method.upper(), target)
+
+                return self.cache.get(method, target, **kwargs)
+
+        if self.debug:
+            print '{} {}'.format(method.upper(), target)
+            for arg in ['params', 'data', 'files']:
+                if kwargs.get(arg):
+                    print '{} => {}'.format(arg, kwargs[arg])
+
         r = getattr(requests, method)(target, auth=(self.apikey, ""), **kwargs)
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
                 if hasattr(r, 'text'):
-                    return json.loads(r.text)['data']
+                    ret = json.loads(r.text)['data']
                 elif hasattr(r, 'content'):
-                    return json.loads(r.content)['data']
+                    ret = json.loads(r.content)['data']
                 else:
                     raise AsanaException('Unknown format in response from api')
             else:
@@ -144,8 +137,13 @@ class AsanaAPI(object):
             if (self.handle_exception(r) > 0):
                 return self._do_request(method, target, **kwargs)
 
-    @classmethod
-    def _ok_status(cls, status_code):
+        if self.cache:
+            self.cache.store(ret, method, target, **kwargs)
+
+        return ret
+
+    @staticmethod
+    def _ok_status(status_code):
         """Check whether status_code is a ok status i.e. 2xx or 404"""
         status_code = int(status_code)
         if status_code / 200 is 1:
@@ -157,3 +155,43 @@ class AsanaAPI(object):
                 return False
         elif status_code is 500:
             return False
+
+class Cache(object):
+    def __init__(self, cachetime):
+        if isinstance(cachetime, int):
+            self.cachetime = cachetime
+        else:
+            self.cachetime = 0 #forever!
+
+        self._cache = {}
+
+    def has(self, method, target, **kwargs):
+        item = self._cache.get(self._get_key(method, target, **kwargs))
+
+        if item:
+            if (
+                not self.cachetime or
+                time.time() - self.cachetime <= item['createTime']
+            ):
+                return True
+
+        return False
+
+    def get(self, method, target, **kwargs):
+        return self._cache.get(self._get_key(method, target, **kwargs))['value']
+
+    def store(self, value, method, target, **kwargs):
+        self._cache[self._get_key(method, target, **kwargs)] = {
+            'value': value,
+            'createTime': time.time()
+        }
+
+    @staticmethod
+    def _get_key(method, target, **kwargs):
+        key = method + target
+
+        for arg in ['data', 'params', 'files']:
+            if kwargs.get(arg):
+                key += str(kwargs[arg])
+
+        return key
