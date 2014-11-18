@@ -131,9 +131,9 @@ class AsanaAPI(object):
         if self._ok_status(r.status_code) and r.status_code is not 404:
             if r.headers['content-type'].split(';')[0] == 'application/json':
                 if hasattr(r, 'text'):
-                    ret = json.loads(r.text)['data']
+                    return json.loads(r.text)['data']
                 elif hasattr(r, 'content'):
-                    ret = json.loads(r.content)['data']
+                    return json.loads(r.content)['data']
                 else:
                     raise AsanaException('Unknown format in response from api')
             else:
@@ -142,8 +142,6 @@ class AsanaAPI(object):
         else:
             if (self.handle_exception(r) > 0):
                 return self._do_request(method, target, **kwargs)
-
-        return ret
 
     @staticmethod
     def _ok_status(status_code):
