@@ -73,47 +73,53 @@ class AsanaAPI(object):
             print("-> Sleeping for %i seconds" % retry_time)
         time.sleep(retry_time)
 
-    def get(self, api_target, **kwargs):
+    def get(self, target, **kwargs):
         """Peform a GET request
 
-        :param api_target: API URI path for request
+        :param target: API URI path for request
         """
-        return self._do_request('get', api_target, **kwargs)
 
-    def delete(self, api_target, **kwargs):
+        if self.cache:
+            if self.cache.has(target, **kwargs):
+                if self.debug:
+                    print 'Loading {} from cache'.format(target)
+
+                return self.cache.get(target, **kwargs)
+
+        ret = self._do_request('get', target, **kwargs)
+
+        if self.cache:
+            self.cache.store(ret, target, **kwargs)
+
+        return ret
+
+    def delete(self, target, **kwargs):
         """Peform a DELETE request
 
-        :param api_target: API URI path for request
+        :param target: API URI path for request
         """
-        return self._do_request('delete', api_target, **kwargs)
+        return self._do_request('delete', target, **kwargs)
 
-    def post(self, api_target, **kwargs):
+    def post(self, target, **kwargs):
         """Peform a POST request
 
-        :param api_target: API URI path for request
+        :param target: API URI path for request
         :param data: POST payload
         :param files: Optional file to upload
         """
-        return self._do_request('post', api_target, **kwargs)
+        return self._do_request('post', target, **kwargs)
 
-    def put(self, api_target, **kwargs):
+    def put(self, target, **kwargs):
         """Peform a PUT request
 
-        :param api_target: API URI path for request
+        :param target: API URI path for request
         :param data: PUT payload
         """        
-        return self._do_request('put', api_target, **kwargs)
+        return self._do_request('put', target, **kwargs)
 
     def _do_request(self, method, target, **kwargs):
 
         target = "/".join([self.aurl, target])
-
-        if self.cache:
-            if self.cache.has(method, target, **kwargs):
-                if self.debug:
-                    print 'Loading {} {} from cache'.format(method.upper(), target)
-
-                return self.cache.get(method, target, **kwargs)
 
         if self.debug:
             print '{} {}'.format(method.upper(), target)
@@ -136,9 +142,6 @@ class AsanaAPI(object):
         else:
             if (self.handle_exception(r) > 0):
                 return self._do_request(method, target, **kwargs)
-
-        if self.cache:
-            self.cache.store(ret, method, target, **kwargs)
 
         return ret
 
@@ -165,8 +168,8 @@ class Cache(object):
 
         self._cache = {}
 
-    def has(self, method, target, **kwargs):
-        key = self._get_key(method, target, **kwargs)
+    def has(self, target, **kwargs):
+        key = self._get_key(target, **kwargs)
         item = self._cache.get(key)
 
         if item:
@@ -180,21 +183,20 @@ class Cache(object):
 
         return False
 
-    def get(self, method, target, **kwargs):
-        return self._cache.get(self._get_key(method, target, **kwargs))['value']
+    def get(self, target, **kwargs):
+        return self._cache.get(self._get_key(target, **kwargs))['value']
 
-    def store(self, value, method, target, **kwargs):
-        self._cache[self._get_key(method, target, **kwargs)] = {
+    def store(self, value, target, **kwargs):
+        self._cache[self._get_key(target, **kwargs)] = {
             'value': value,
             'createTime': time.time()
         }
 
     @staticmethod
-    def _get_key(method, target, **kwargs):
-        key = method + target
+    def _get_key(target, **kwargs):
+        key = target
 
-        for arg in ['data', 'params', 'files']:
-            if kwargs.get(arg):
-                key += str(kwargs[arg])
+        if kwargs.get('params'):
+            key += str(kwargs['params'])
 
         return key
