@@ -33,6 +33,7 @@ class Entity(object):
 			for regex, cls in self._matchons.items():
 				if re.search(regex, key):
 					self._data[key] = cls(self._data[key])
+					break
 
 	@classmethod
 	def set_api(cls, api):
@@ -161,7 +162,7 @@ class Project(Entity):
 	pass
 
 class User(Entity):
-	pass
+	_matchon = '_by'
 
 class Tag(Entity):
 	pass
@@ -176,8 +177,6 @@ class Task(Entity):
 		'followers','modified_at','name','notes','projects','parent',
 		'workspace'
 	]
-
-	_matchon = '_by'
 
 class Story(Entity):
 

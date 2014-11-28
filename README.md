@@ -43,3 +43,6 @@ Example of basic usage (getting all incomplete tasks in certain project):
 	- ~~get_created_by~~
 	- get_assignee (?)
 - ~~__init__.py~~
+- regex matching for field types:
+    - handle array values
+    - handle multiple regexes for one type? (or force building into into one regex?)
