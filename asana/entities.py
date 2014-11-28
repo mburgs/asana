@@ -29,10 +29,18 @@ class Entity(object):
 
 		#todo it would probably be better to subclass
 		# dict and implement this in there
-		for key in self._data.keys():
+		for key in self._data:
+			if not self._data[key]:
+				continue
+
 			for regex, cls in self._matchons.items():
 				if re.search(regex, key):
-					self._data[key] = cls(self._data[key])
+					if isinstance(self._data[key], list):
+						for idx, val in enumerate(self._data[key]):
+							self._data[key][idx] = cls(val)
+					else:
+						self._data[key] = cls(self._data[key])
+
 					break
 
 	@classmethod
@@ -159,10 +167,10 @@ class Entity(object):
 		return self.__str__()
 
 class Project(Entity):
-	pass
+	_matchon = 'project'
 
 class User(Entity):
-	_matchon = '_by'
+	_matchon = 'assignee|followers|_by'
 
 class Tag(Entity):
 	pass
@@ -175,7 +183,7 @@ class Task(Entity):
 	_fields = [
 		'assignee','created_by','created_at','completed','completed_at',
 		'followers','modified_at','name','notes','projects','parent',
-		'workspace'
+		'workspace','tags'
 	]
 
 class Story(Entity):
