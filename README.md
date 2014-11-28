@@ -1,7 +1,7 @@
 ## Asana API
 
 Provides a fluid interface for interacting with the Asana API.
-Some code borrowed from https://github.com/pandemicsyn/asana
+Some code borrowed from https://github.com/pandemicsyn/asana and then heavily modified
 
 ### Features
  - Easily retrieve items and filter by any field - automatically handle which
@@ -42,5 +42,4 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - Task:
 	- ~~get_created_by~~
 	- get_assignee (?)
-- setup.py, modularize
-- leverage Input/Output options to pull more fields? (http://developer.asana.com/documentation/#Options)
+- ~~__init__.py~~

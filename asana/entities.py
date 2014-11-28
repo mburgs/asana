@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import inspect
+import sys
+
 class EntityException(Exception):
     """Wrap entity specific errors"""
     pass
@@ -9,14 +12,20 @@ class Entity(object):
 	common funcitonality"""
 
 	_filter_keys = []
+	_fields = []
 
 	def __init__(self, data):
 		self._init(data)
 		self._ready = True
 
-	def _init(self, data):
-		self._data = data
-		self._dirty = set()
+	def _init(self, data, merge=False):
+		if merge:
+			for key, value in data.items():
+				if key not in self._data:
+					self._data[key] = value
+		else:
+			self._data = data
+			self._dirty = set()
 
 	@classmethod
 	def set_api(cls, api):
@@ -46,7 +55,7 @@ class Entity(object):
 
 	@classmethod
 	def _run_find(cls, target, query):
-		params = {} #params that are part of the request
+		params = cls._get_default_params() #params that are part of the request
 
 		if cls._filter_keys:
 			for key in query.keys():
@@ -57,6 +66,15 @@ class Entity(object):
 		data = cls._get_api().get(target, params=params)
 
 		return cls._build_result(query, data)
+
+	@classmethod
+	def _get_default_params(cls):
+		if cls._fields:
+			return {
+				'opt_fields': ','.join(cls._fields)
+			}
+
+		return {}
 
 	@classmethod
 	def _build_result(cls, query, data):
@@ -82,7 +100,12 @@ class Entity(object):
 		return True
 
 	def load(self):
-		self.init(self._get_api().get(self._get_item_url))
+		"""Loads all of this items data using its ID"""
+
+		#TODO check if sending in empty opt_fields will make us lose all fields
+		self._init(self._get_api().get(self._get_item_url()), merge=True)
+
+		return self
 
 	def get_subitem(self, subitem_class, query={}):
 		target = '/'.join([self._get_item_url(), subitem_class._get_api_endpoint()])
@@ -115,7 +138,7 @@ class Entity(object):
 			return self.__dict__['_data'][attr]
 
 	def __setattr__(self, attr, value):
-		if attr in ['_data', '_dirty', '_ready']:
+		if attr[0] == '_':
 			self.__dict__[attr] = value
 		elif self._ready:
 			self._data[attr] = value
@@ -139,6 +162,11 @@ class Tag(Entity):
 class Task(Entity):
 	_filter_keys = [
 		'project', 'assignee', 'workspace', 'completed_since', 'modified_since'
+	]
+
+	_fields = [
+		'assignee','created_by','created_at','completed','completed_at','followers'
+		'modified_at','name','notes','projects','parent','workspace'
 	]
 
 	def get_created_by(self):
