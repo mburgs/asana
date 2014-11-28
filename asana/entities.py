@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-import inspect
-import sys
+import re
 
 class EntityException(Exception):
     """Wrap entity specific errors"""
@@ -13,6 +12,7 @@ class Entity(object):
 
 	_filter_keys = []
 	_fields = []
+	_matchons = []
 
 	def __init__(self, data):
 		self._init(data)
@@ -26,6 +26,13 @@ class Entity(object):
 		else:
 			self._data = data
 			self._dirty = set()
+
+		#todo it would probably be better to subclass
+		# dict and implement this in there
+		for key in self._data.keys():
+			for regex, cls in self._matchons.items():
+				if re.search(regex, key):
+					self._data[key] = cls(self._data[key])
 
 	@classmethod
 	def set_api(cls, api):
@@ -165,18 +172,12 @@ class Task(Entity):
 	]
 
 	_fields = [
-		'assignee','created_by','created_at','completed','completed_at','followers'
-		'modified_at','name','notes','projects','parent','workspace'
+		'assignee','created_by','created_at','completed','completed_at',
+		'followers','modified_at','name','notes','projects','parent',
+		'workspace'
 	]
 
-	def get_created_by(self):
-		"""Gets the User that created this item - currently works by finding
-		the first story that contains the word 'added'"""
-
-		return User(self.get_subitem(Story, {
-			'type': 'system',
-			'text':	lambda t: 'added' in t
-		})[0].created_by)
+	_matchon = '_by'
 
 class Story(Entity):
 
