@@ -33,7 +33,7 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - finish todo
 - implement save()
     - ~~update~~
-    - create
+    - ~~create~~
 - implement Section
     - ~~subtasks~~
     - naming (append colon)

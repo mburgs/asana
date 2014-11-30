@@ -38,9 +38,11 @@ class Entity(object):
 				if re.search(regex, key):
 					if isinstance(self._data[key], list):
 						for idx, val in enumerate(self._data[key]):
-							self._data[key][idx] = cls(val)
+							if isinstance(val, dict):
+								self._data[key][idx] = cls(val)
 					else:
-						self._data[key] = cls(self._data[key])
+						if isinstance(self._data[key], dict):
+							self._data[key] = cls(self._data[key])
 
 					break
 
@@ -68,12 +70,22 @@ class Entity(object):
 
 	@classmethod
 	def find(cls, query={}):
+		"""Find objects of this type that fit query
+
+		:param query: dict of key/value pairs to match against. keys that the
+			API natively handles are sent as part of the request if they have
+			scalar values, other keys are filtered from the response.
+			filter values can be either absolute values or lambdas. for lambdas
+			the value of its key will be passed as the only argument and it
+			will be considered passing if the lambda returns true
+		"""
 		return cls._run_find(cls._get_api_endpoint(), query)
 
 	@classmethod
 	def _run_find(cls, target, query):
 		params = cls._get_default_params() #params that are part of the request
 
+		#todo handle lambdas that are passed in for filter keys
 		if cls._filter_keys:
 			for key in query.keys():
 				if key in cls._filter_keys:
@@ -86,6 +98,10 @@ class Entity(object):
 
 	@classmethod
 	def _get_default_params(cls):
+		"""Hook to add params that will always be part of a find request
+		Default behavior checks for the 'fields' property and, if present,
+		joins it with commas and passes it as the opt_fields param
+		"""
 		if cls._fields:
 			return {
 				'opt_fields': ','.join(cls._fields)
@@ -103,7 +119,8 @@ class Entity(object):
 	@classmethod
 	def _filter(cls, entity, query):
 		"""Filters a single entity dict against a dict of allowed values
-		returning true if it passes"""
+		returning true if it passes
+		"""
 
 		for key, value in query.items():
 			if key not in entity:
@@ -132,7 +149,8 @@ class Entity(object):
 	def save(self):
 		"""Handles both creating and updating content
 		The assumption is if there is no ID set this is
-		a creation request"""
+		a creation request
+		"""
 
 		if self.id:
 			return self._do_update()
@@ -149,15 +167,15 @@ class Entity(object):
 		if not data:
 			return
 
-		self._get_api().put(self._get_item_url(), data=data)
+		return self._get_api().put(self._get_item_url(), data=data)
 
 	def _do_create(self):
-		pass
+		return self._init(self._get_api().post(self._get_api_endpoint(), data=self._data))
 
 	def delete(self):
 		"""Deletes the specified resource. The ID must be set"""
 
-		self.get_api().delete(self._get_item_url())
+		self._get_api().delete(self._get_item_url())
 
 	def __getattr__(self, attr):
 
@@ -183,8 +201,10 @@ class Entity(object):
 class Project(Entity):
 	_matchon = 'project'
 
+	_fields = ['name', 'workspace']
+
 class User(Entity):
-	_matchon = 'assignee|followers|_by'
+	_matchon = 'assignee^|followers|_by'
 
 class Tag(Entity):
 	pass
@@ -203,9 +223,17 @@ class Task(Entity):
 	]
 
 	def add_project(self, projectOrId):
+		"""Adds this task to a project
+
+		:param projectOrId Either the project object or a project ID
+		"""
 		return self._edit_project('addProject', projectOrId)
 
 	def remove_project(self, projectOrId):
+		"""Removes this task from a project
+
+		:param projectOrId Either the project object or a project ID
+		"""
 		return self._edit_project('removeProject', projectOrId)
 
 	def _edit_project(self, operation, projectOrId):
@@ -231,6 +259,11 @@ class Section(Entity):
 
 	@classmethod
 	def _build_result(cls, query, data):
+		"""We need custom result building for sections to figure out which in
+		the reuslt set are sections and which are tasks - the results are
+		returned in order so every task after a section until the next section
+		is considered a subtask
+		"""
 		current = None
 		filling = False
 		ret = []
