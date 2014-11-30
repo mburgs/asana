@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import json
 import re
 
 class EntityException(Exception):
@@ -134,11 +135,24 @@ class Entity(object):
 		a creation request"""
 
 		if self.id:
-			#performing update - put
-			pass
+			return self._do_update()
 		else:
 			#performing create - post
-			pass
+			return self._do_create()
+
+	def _do_update(self):
+		data = {}
+
+		for key in self._dirty:
+			data[key] = self._data[key]
+
+		if not data:
+			return
+
+		self._get_api().put(self._get_item_url(), data=json.dumps({'data':data}))
+
+	def _do_create(self):
+		pass
 
 	def delete(self):
 		"""Deletes the specified resource. The ID must be set"""

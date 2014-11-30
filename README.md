@@ -17,8 +17,7 @@ Some code borrowed from https://github.com/pandemicsyn/asana and then heavily mo
 
 Example of basic usage (getting all incomplete tasks in certain project):
 
-	import asana
-	from entities import *
+	from asana import *
 	
 	api_key = '<api_key>'
 	Entities.set_api(AsanaAPI(api_key))
@@ -33,6 +32,8 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - finish README
 - finish todo
 - implement save()
+    - ~~update~~
+    - create
 - implement Section
     - ~~subtasks~~
     - naming (append colon)
