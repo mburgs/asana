@@ -107,6 +107,10 @@ class AsanaAPI(object):
         :param data: POST payload
         :param files: Optional file to upload
         """
+
+        if 'data' in kwargs:
+            kwargs['data'] = json.dumps({'data':kwargs['data']})
+
         return self._do_request('post', target, **kwargs)
 
     def put(self, target, **kwargs):
@@ -114,7 +118,11 @@ class AsanaAPI(object):
 
         :param target: API URI path for request
         :param data: PUT payload
-        """        
+        """
+
+        if 'data' in kwargs:
+            kwargs['data'] = json.dumps({'data':kwargs['data']})
+            
         return self._do_request('put', target, **kwargs)
 
     def _do_request(self, method, target, **kwargs):

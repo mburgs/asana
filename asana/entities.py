@@ -149,7 +149,7 @@ class Entity(object):
 		if not data:
 			return
 
-		self._get_api().put(self._get_item_url(), data=json.dumps({'data':data}))
+		self._get_api().put(self._get_item_url(), data=data)
 
 	def _do_create(self):
 		pass
@@ -190,6 +190,8 @@ class Tag(Entity):
 	pass
 
 class Task(Entity):
+	_matchon = 'task'
+
 	_filter_keys = [
 		'project', 'assignee', 'workspace', 'completed_since', 'modified_since'
 	]
@@ -197,8 +199,22 @@ class Task(Entity):
 	_fields = [
 		'assignee','created_by','created_at','completed','completed_at',
 		'followers','modified_at','name','notes','projects','parent',
-		'workspace','tags'
+		'workspace'
 	]
+
+	def add_project(self, projectOrId):
+		return self._edit_project('addProject', projectOrId)
+
+	def remove_project(self, projectOrId):
+		return self._edit_project('removeProject', projectOrId)
+
+	def _edit_project(self, operation, projectOrId):
+		pId = projectOrId.id if isinstance(projectOrId, Project) else projectOrId
+
+		return self._get_api().post(
+			'/'.join([self._get_item_url(), operation]),
+			data={'project':pId}
+		)
 
 class Story(Entity):
 
@@ -229,7 +245,7 @@ class Section(Entity):
 					current = ent
 					current['subtasks'] = []
 			elif current:
-				current['subtasks'].append(Task(ent))
+				current['subtasks'].append(ent)
 
 		if current:
 			ret.append(cls(current))

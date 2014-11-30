@@ -37,12 +37,12 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - implement Section
     - ~~subtasks~~
     - naming (append colon)
+- Task
+    - ~~addProject, removeProject~~
+    - functions for positioning? (addAfter, moveAfter?)
 - unit testing
 - docs
 - ~~caching~~
-- Task:
-	- ~~get_created_by~~
-	- get_assignee (?)
 - ~~__init__.py~~
 - regex matching for field types:
     - ~~handle array values~~
