@@ -206,21 +206,30 @@ class Entity(object):
 		return self.__str__()
 
 	def __hash__(self):
-		return hash(frozenset(self._data.items()))
+		return hash(self.id if hasattr(self, 'id') else frozenset(self._data.items()))
 
 	def __eq__(self, other):
-		return cmp(self._data, other._data)
+		return self.id == other.id if hasattr(self, 'id') else cmp(self._data, other._data)
 
 class Project(Entity):
 	_matchon = 'project'
 
-	_fields = ['name', 'workspace']
+	_fields = ['name', 'workspace', 'team']
 
 	def add_task(self, task):
-		task.projects = [self.id]
-		task.workspace = self.workspace['id']
+		"""Adds a new task to this project, if the task is already created
+		then proxies to Task.add_project
 
-		task.save()
+		:param task: task to add to project
+		"""
+
+		if task.id:
+			task.add_project(self)
+		else:
+			task.projects = [self.id]
+			task.workspace = self.workspace['id']
+
+			task.save()
 
 class User(Entity):
 	_matchon = 'assignee^|followers|_by'

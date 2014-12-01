@@ -46,3 +46,4 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - ~~__init__.py~~
 - regex matching for field types:
     - ~~handle array values~~
+- filter out sections from task lists - override _build_results?
