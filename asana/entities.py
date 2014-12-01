@@ -20,6 +20,13 @@ class Entity(object):
 		self._ready = True
 
 	def _init(self, data, merge=False):
+		"""Initializes this entity, either with entirely new data or with an
+		update to be merged with the current data
+
+		:param data: the data to use for the entity
+		:param merge: if true only set keys from data that aren't already set
+			internally
+		"""
 		if merge:
 			for key, value in data.items():
 				if key not in self._data:
@@ -202,6 +209,12 @@ class Project(Entity):
 	_matchon = 'project'
 
 	_fields = ['name', 'workspace']
+
+	def add_task(self, task):
+		task.projects = [self.id]
+		task.workspace = self.workspace['id']
+
+		task.save()
 
 class User(Entity):
 	_matchon = 'assignee^|followers|_by'
