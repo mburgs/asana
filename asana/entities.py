@@ -205,6 +205,12 @@ class Entity(object):
 	def __repr__(self):
 		return self.__str__()
 
+	def __hash__(self):
+		return hash(frozenset(self._data.items()))
+
+	def __eq__(self, other):
+		return cmp(self._data, other._data)
+
 class Project(Entity):
 	_matchon = 'project'
 
