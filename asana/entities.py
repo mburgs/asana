@@ -121,10 +121,10 @@ class Entity(object):
 		"""Filters the result set based on a query returning the resulting
 		objects as instances of the current class"""
 		
-		return [cls(ent) for ent in data if cls._filter(ent, query)]
+		return [cls(ent) for ent in data if cls._filter_result_item(ent, query)]
 
 	@classmethod
-	def _filter(cls, entity, query):
+	def _filter_result_item(cls, entity, query):
 		"""Filters a single entity dict against a dict of allowed values
 		returning true if it passes
 		"""
@@ -250,6 +250,13 @@ class Task(Entity):
 		'workspace'
 	]
 
+	@classmethod
+	def _filter_result_item(cls, entity, query):
+		if Section._is_section(entity):
+			return False
+
+		return super(Task, cls)._filter_result_item(entity, query)
+
 	def add_project(self, projectOrId):
 		"""Adds this task to a project
 
@@ -302,7 +309,7 @@ class Section(Entity):
 					ret.append(cls(current))
 					current = None
 
-				if cls._filter(ent, query):
+				if cls._filter_result_item(ent, query):
 					current = ent
 					current['subtasks'] = []
 			elif current:
