@@ -36,7 +36,7 @@ Example of basic usage (getting all incomplete tasks in certain project):
     - ~~create~~
 - implement Section
     - ~~subtasks~~
-    - naming (append colon)
+    - naming (append colon on save)
 - Task
     - ~~addProject, removeProject~~
     - functions for positioning? (addAfter, moveAfter?)
@@ -46,4 +46,8 @@ Example of basic usage (getting all incomplete tasks in certain project):
 - ~~__init__.py~~
 - regex matching for field types:
     - ~~handle array values~~
-- filter out sections from task lists - override _build_results?
+- ~~filter out sections from task lists~~
+- relationships
+    - child/parent, instead of get_subitem implement magic methods
+    - for adding project, tag, follower to task implement magic methods
+- subtasks?
