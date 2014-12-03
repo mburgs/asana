@@ -326,7 +326,7 @@ class Section(Entity):
 
 		:param ent: The dict to check
 		"""
-		return ent['name'][-1] == ':'
+		return ent['name'] and ent['name'][-1] == ':'
 
 	def get_subitem(self, subclass, query):
 		raise EntityException('This function does not apply to sections, try the subtasks property')
