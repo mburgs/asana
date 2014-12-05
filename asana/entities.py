@@ -232,7 +232,7 @@ class Project(Entity):
 			task.save()
 
 class User(Entity):
-	_matchon = 'assignee^|followers|_by'
+	_matchon = 'assignee$|followers|_by'
 
 class Tag(Entity):
 	pass
@@ -287,6 +287,8 @@ class Story(Entity):
 
 class Section(Entity):
 	_filter_keys = Task._filter_keys
+
+	_fields = Task._fields
 
 	@classmethod
 	def _get_api_endpoint(cls):

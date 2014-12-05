@@ -51,3 +51,4 @@ Example of basic usage (getting all incomplete tasks in certain project):
     - child/parent, instead of get_subitem implement magic methods
     - for adding project, tag, follower to task implement magic methods
 - subtasks?
+- issue with passing in items for filters. If they're request filters needs to be id but if not needs to be id (ie for project) - need to filter on value

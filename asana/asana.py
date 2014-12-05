@@ -82,7 +82,7 @@ class AsanaAPI(object):
         if self.cache:
             if self.cache.has(target, **kwargs):
                 if self.debug:
-                    print 'Loading {} from cache'.format(target)
+                    print 'CACHE {}'.format(target)
 
                 return self.cache.get(target, **kwargs)
 
