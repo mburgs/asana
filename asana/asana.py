@@ -83,7 +83,7 @@ class AsanaAPI(object):
         if self.cache:
             if self.cache.has(target, **kwargs):
                 if self.debug:
-                    print 'CACHE {}'.format(target)
+                    print 'CACHE {0}'.format(target)
 
                 return self.cache.get(target, **kwargs)
 
@@ -131,10 +131,10 @@ class AsanaAPI(object):
         target = "/".join([self.aurl, target])
 
         if self.debug:
-            print '{} {}'.format(method.upper(), target)
+            print '{0} {1}'.format(method.upper(), target)
             for arg in ['params', 'data', 'files']:
                 if kwargs.get(arg):
-                    print '\t{} => {}'.format(arg, kwargs[arg])
+                    print '\t{0} => {1}'.format(arg, kwargs[arg])
 
         r = getattr(requests, method)(target, auth=(self.apikey, ""), **kwargs)
         if self._ok_status(r.status_code) and r.status_code is not 404:

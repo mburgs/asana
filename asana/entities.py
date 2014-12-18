@@ -131,7 +131,7 @@ class Entity(object):
 
 		for key, value in query.items():
 			if key not in entity:
-				raise EntityException('The key {} is not a valid query for {}'.format(key, cls.__name__))
+				raise EntityException('The key {0} is not a valid query for {1}'.format(key, cls.__name__))
 
 			if (
 				(callable(value) and not value(entity[key])) or
