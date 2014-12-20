@@ -8,8 +8,8 @@ Some code borrowed from https://github.com/pandemicsyn/asana and then heavily mo
  fields are request filters and which ar filtered out manually. Filters can be strings which are matched or lambdas
  - Lazy loading ORM. Sub-objects are automatically wrapped with their corresponding objects and accessing any unloaded fields on them will cause a that object to load it's fields. Example:
 
-    task = Task.find({'name': 'My task'})
-    print task.assignee.name
+	task = Task.find({'name': 'My task'})
+	print task.assignee.name
 
  - `get_subitem` - unified interface for retrieving items in Parent-Child
  relations
