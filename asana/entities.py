@@ -192,6 +192,10 @@ class Entity(object):
 		if attr in self.__dict__['_data']:
 			return self.__dict__['_data'][attr]
 
+		if attr in self._fields:
+			self.load()
+			return self.__dict__['_data'][attr]
+
 	def __setattr__(self, attr, value):
 		if attr[0] == '_':
 			self.__dict__[attr] = value
@@ -233,6 +237,10 @@ class Project(Entity):
 
 class User(Entity):
 	_matchon = 'assignee$|followers|_by'
+
+	_fields = [
+		'name', 'email'
+	]
 
 class Tag(Entity):
 	pass
