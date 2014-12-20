@@ -1,14 +1,11 @@
-from Entity import Entity
-from Task import Task
+from entity import Entity
+import task
 
-class Section(Entity):
-	_filter_keys = Task._filter_keys
+class Section(task.Task):
+	_matchon = None
 
-	_fields = Task._fields
-
-	@classmethod
-	def _get_api_endpoint(cls):
-		return Task._get_api_endpoint()
+	def _filter_result_item(cls, entity, query):
+		Entity._filter_result_item(entity, query)
 
 	@classmethod
 	def _build_result(cls, query, data):

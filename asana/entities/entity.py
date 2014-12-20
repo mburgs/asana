@@ -11,8 +11,15 @@ class Entity(object):
 	"""Base implementation for an Asana entity containing
 	common funcitonality"""
 
+	# Keys which are filtered as part of the HTTP request
 	_filter_keys = []
+
+	#fields this object has. This affects what is returned from the Asana API
+	#as well as serving as a lookup for lazy-loading
 	_fields = []
+
+	#define regex to match field names that should be wrapped with an instance
+	#of this object
 	_matchons = []
 
 	def __init__(self, data):

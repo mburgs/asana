@@ -1,4 +1,4 @@
-from Entity import Entity
+from entity import Entity
 
 class Task(Entity):
 	_matchon = 'task'
@@ -15,7 +15,8 @@ class Task(Entity):
 
 	@classmethod
 	def _filter_result_item(cls, entity, query):
-		if Section._is_section(entity):
+		if entity['name'][-1] == ':':
+			#this is a section
 			return False
 
 		return super(Task, cls)._filter_result_item(entity, query)
