@@ -3,6 +3,8 @@ from asana import *
 
 import inspect
 
+__version__ = ".".join(map(str, (0, 1, 1)))
+
 clsmembers = inspect.getmembers(entities, inspect.isclass)
 
 #build map for matchon

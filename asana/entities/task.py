@@ -15,11 +15,18 @@ class Task(Entity):
 
 	@classmethod
 	def _filter_result_item(cls, entity, query):
-		if entity['name'][-1] == ':':
-			#this is a section
+		if cls._is_section(entity):
 			return False
 
 		return super(Task, cls)._filter_result_item(entity, query)
+
+	@staticmethod
+	def _is_section(ent):
+		"""Checks whether a dict from the API is a section Task
+
+		:param ent: The dict to check
+		"""
+		return ent['name'] and ent['name'][-1] == ':'
 
 	def add_project(self, projectOrId):
 		"""Adds this task to a project
