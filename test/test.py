@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys, unittest
 
 sys.path.insert(0, "../")
@@ -31,6 +34,11 @@ class EntityTest(unittest.TestCase):
 class ProjectTest(unittest.TestCase):
 	def test_endpoint_correct(self):
 		self.assertEqual(Project._get_api_endpoint(), 'projects')
+
+class SectionTest(unittest.TestCase):
+	def test_endpoint_correct(self):
+		"""Test section endpoint uses tasks"""
+		self.assertEqual(Section._get_api_endpoint(), 'tasks')
 
 if __name__ == "__main__":
 	unittest.main()

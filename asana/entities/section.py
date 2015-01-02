@@ -4,13 +4,14 @@ import task
 class Section(task.Task):
 	_matchon = None
 
+	@classmethod
 	def _filter_result_item(cls, entity, query):
-		Entity._filter_result_item(entity, query)
+		return Entity._filter_result_item(entity, query)
 
 	@classmethod
 	def _get_api_endpoint(cls):
 		"""Point to tasks"""
-		return 'tasks'
+		return task.Task._get_api_endpoint()
 
 	@classmethod
 	def _build_result(cls, query, data):
@@ -46,7 +47,7 @@ class Section(task.Task):
 
 		:param ent: The dict to check
 		"""
-		return ent['name'] and ent['name'][-1] == ':'
+		return ent['name'][-1] == ':'
 
 	def get_subitem(self, subclass, query):
 		raise EntityException('This function does not apply to sections, try the subtasks property')
