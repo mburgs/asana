@@ -8,6 +8,11 @@ class Section(task.Task):
 		Entity._filter_result_item(entity, query)
 
 	@classmethod
+	def _get_api_endpoint(cls):
+		"""Point to tasks"""
+		return 'tasks'
+
+	@classmethod
 	def _build_result(cls, query, data):
 		"""We need custom result building for sections to figure out which in
 		the reuslt set are sections and which are tasks - the results are
