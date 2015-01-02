@@ -8,6 +8,10 @@ asana =  __import__('asana')
 
 from asana import *
 
+class ApiMock():
+	"""Mock an API by saving all calls in a dict"""
+	pass
+
 class GeneralTest(unittest.TestCase):
 	"""Tests that affect multiple classes"""
 	def test_section_definition(self):

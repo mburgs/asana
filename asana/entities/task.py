@@ -1,4 +1,5 @@
 from entity import Entity
+import project
 
 class Task(Entity):
 	_matchon = 'task'
@@ -43,7 +44,7 @@ class Task(Entity):
 		return self._edit_project('removeProject', projectOrId)
 
 	def _edit_project(self, operation, projectOrId):
-		pId = projectOrId.id if isinstance(projectOrId, Project) else projectOrId
+		pId = projectOrId.id if isinstance(projectOrId, project.Project) else projectOrId
 
 		return self._get_api().post(
 			'/'.join([self._get_item_url(), operation]),
