@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, unittest, re
+import os, sys, unittest, re
 
-sys.path.insert(0, "../")
+asanadir = os.path.dirname(os.path.realpath(__file__))+"/../"
+sys.path.insert(0, asanadir)
 asana =  __import__('asana')
 
 from asana import *
