@@ -41,6 +41,14 @@ class EntityTest(BaseTest):
 
 		self.assertEqual(test_entity.foo, 'bar')
 
+	def test_new_id_overwrites(self):
+		"""Tests that a new ID from the API will replace a placeholder ID"""
+		user = User({'id':'me'})
+
+		user._init({'id':'new'})
+
+		self.assertEqual(user.id, 'new')
+
 class ProjectTest(BaseTest):
 	def test_endpoint_correct(self):
 		self.assertEqual(Project._get_api_endpoint(), 'projects')

@@ -36,7 +36,7 @@ class Entity(object):
 		"""
 		if merge:
 			for key, value in data.items():
-				if key not in self._data:
+				if key not in self._data or key == 'id':
 					self._data[key] = value
 		else:
 			self._data = data
