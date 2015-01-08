@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from entity import Entity
 import project
 
@@ -14,20 +16,29 @@ class Task(Entity):
 		'workspace'
 	]
 
+	filter_sections = True
+
 	@classmethod
 	def _filter_result_item(cls, entity, query):
-		if cls._is_section(entity):
+		if cls.filter_sections and cls._is_section(entity):
 			return False
 
 		return super(Task, cls)._filter_result_item(entity, query)
 
-	@staticmethod
-	def _is_section(ent):
+	@classmethod
+	def _is_section(cls, ent):
 		"""Checks whether a dict from the API is a section Task
 
 		:param ent: The dict to check
 		"""
-		return ent['name'] and ent['name'][-1] == ':'
+		return ent['name'] and cls._is_section_name(ent['name'])
+
+	@staticmethod
+	def _is_section_name(name):
+		return name[-1] == ':'
+
+	def is_section(self):
+		return self._is_section_name(self.name)
 
 	def add_project(self, projectOrId):
 		"""Adds this task to a project
