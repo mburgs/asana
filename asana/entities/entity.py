@@ -23,6 +23,10 @@ class Entity(object):
 	#of this object
 	_matchons = []
 
+	#items that are sub-items of the current one such that the API endpoint is
+	#/api/parent/<id>/subitme
+	_children = {}
+
 	def __init__(self, data):
 		self._init(data)
 		self._ready = True
@@ -204,12 +208,26 @@ class Entity(object):
 			self.load()
 			return self.__dict__['_data'][attr]
 
+		if attr in self._children.keys():
+			child = self._children[attr]
+
+			if not child.is_loaded():
+				child.load_value(self)
+
+			return child.value
+
 	def __setattr__(self, attr, value):
 		if attr[0] == '_':
 			self.__dict__[attr] = value
 		elif self._ready:
-			self._data[attr] = value
-			self._dirty.add(attr)
+
+			if attr in self._fields:
+				self._data[attr] = value
+				self._dirty.add(attr)
+			# elif attr in self._children:
+			# 	self._children[attr]['value'] = value
+			else:
+				raise Exception("Cannot set attribute {0} - unknown name".foramt(attr))
 
 	def __str__(self):
 		return vars(self).__repr__()

@@ -16,6 +16,10 @@ class Task(Entity):
 		'workspace'
 	]
 
+	_children = {
+		'tags': None
+	}
+
 	filter_sections = True
 
 	@classmethod

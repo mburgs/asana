@@ -5,6 +5,10 @@ class Project(Entity):
 
 	_fields = ['name', 'notes', 'workspace', 'team']
 
+	_children = {
+		'tasks': None
+	}
+
 	def add_task(self, task):
 		"""Adds a new task to this project, if the task is already created
 		then proxies to Task.add_project

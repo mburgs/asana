@@ -53,6 +53,16 @@ class ProjectTest(BaseTest):
 	def test_endpoint_correct(self):
 		self.assertEqual(Project._get_api_endpoint(), 'projects')
 
+	def test_tasks_as_children(self):
+		project = Project({'id':1})
+
+		project.tasks
+
+		self.assertIn(
+			('get', 'projects/1/tasks', {'params': {'opt_fields': ','.join(Task._fields)}}),
+			self.api.requests
+		)
+
 class SectionTest(BaseTest):
 	def test_endpoint_correct(self):
 		"""Test section endpoint uses tasks"""
@@ -80,6 +90,16 @@ class TaskTest(BaseTest):
 					('post', 'tasks/1/' + op, {'data': {'project': id}}),
 					self.api.requests
 				)
+
+	def test_tags_as_children(self):
+		task = Task({'id':1})
+
+		task.tags
+
+		self.assertIn(
+			('get', 'tasks/1/tags', {'params': {'opt_fields': ','.join(Tag._fields)}}),
+			self.api.requests
+		)
 
 
 
