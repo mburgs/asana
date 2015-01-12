@@ -19,13 +19,8 @@ for cls in clsmembers:
 		#put children into wrapper classes
 		for key, subClass in cls[1]._children.items():
 
-			if isinstance(subClass, Child):
-				continue
-
 			if not subClass:
-				subClass = locals()[key[:-1].title()]
-
-			cls[1]._children[key] = Child(subClass)
+				cls[1]._children[key] = locals()[key[:-1].title()]
 
 
 Entity._matchons = matches

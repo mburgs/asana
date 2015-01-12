@@ -212,10 +212,12 @@ class Entity(object):
 
 		if attr in self._children.keys():
 
-			if not attr in self._childrenValues:
-				self._childrenValues[attr] = self._children[attr].get_value(self)
+			if not attr in self._childrenValues.keys():
+				self._childrenValues[attr] = self.get_subitem(self._children[attr])
 
 			return self._childrenValues[attr]
+
+		raise Exception("Could not locate key " + attr)
 
 	def __setattr__(self, attr, value):
 		if attr[0] == '_':

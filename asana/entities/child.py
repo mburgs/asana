@@ -6,5 +6,4 @@ class Child(object):
 		self.cls = cls
 
 	def get_value(self, parent):
-		#gotta find a better way to do this
-		self.value = parent.get_subitem(self.cls)
+		return parent.get_subitem(self.cls)
