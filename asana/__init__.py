@@ -17,8 +17,15 @@ for cls in clsmembers:
 			matches[cls[1]._matchon] = cls[1]
 
 		#put children into wrapper classes
-		for key, child in cls[1]._children.items():
-			cls[1]._children[key] = Child(key, child)
+		for key, subClass in cls[1]._children.items():
+
+			if isinstance(subClass, Child):
+				continue
+
+			if not subClass:
+				subClass = locals()[key[:-1].title()]
+
+			cls[1]._children[key] = Child(subClass)
 
 
 Entity._matchons = matches

@@ -28,6 +28,7 @@ class Entity(object):
 	_children = {}
 
 	def __init__(self, data):
+		self._childrenValues = {}
 		self._init(data)
 		self._ready = True
 
@@ -208,13 +209,13 @@ class Entity(object):
 			self.load()
 			return self.__dict__['_data'][attr]
 
+
 		if attr in self._children.keys():
-			child = self._children[attr]
 
-			if not child.is_loaded():
-				child.load_value(self)
+			if not attr in self._childrenValues:
+				self._childrenValues[attr] = self._children[attr].get_value(self)
 
-			return child.value
+			return self._childrenValues[attr]
 
 	def __setattr__(self, attr, value):
 		if attr[0] == '_':
@@ -224,8 +225,6 @@ class Entity(object):
 			if attr in self._fields:
 				self._data[attr] = value
 				self._dirty.add(attr)
-			# elif attr in self._children:
-			# 	self._children[attr]['value'] = value
 			else:
 				raise Exception("Cannot set attribute {0} - unknown name".foramt(attr))
 

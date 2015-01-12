@@ -1,5 +1,5 @@
 import os
-import glob
+import glob, importlib
 
 #expose classes as part of the base module
 modules = glob.glob(os.path.dirname(__file__)+"/*.py")
