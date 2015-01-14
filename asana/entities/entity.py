@@ -217,7 +217,8 @@ class Entity(object):
 
 			return self._childrenValues[attr]
 
-		raise Exception("Could not locate key " + attr)
+		if attr != 'id':
+			raise Exception("Could not locate key " + attr)
 
 	def __setattr__(self, attr, value):
 		if attr[0] == '_':
