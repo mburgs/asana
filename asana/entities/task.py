@@ -58,10 +58,27 @@ class Task(Entity):
 		"""
 		return self._edit_project('removeProject', projectOrId)
 
-	def _edit_project(self, operation, projectOrId):
+	def _edit_project(self, operation, projectOrId, data={}):
 		pId = projectOrId.id if isinstance(projectOrId, project.Project) else projectOrId
+
+		data['project'] = pId
 
 		return self._get_api().post(
 			'/'.join([self._get_item_url(), operation]),
-			data={'project':pId}
+			data=data
+		)
+
+	def move_to_section(self, section):
+		"""Moves this task to a section with the assumption that the task and
+		section already share a project. If they share multiple projects it
+		will use the first one found
+
+		:param section The section to move to
+		"""
+		
+		return self._edit_project(
+			'addProject',
+			# get first project that task and section share
+			(set(self.projects) & set(section.projects)).pop(),
+			{'insertAfter': section.id}
 		)

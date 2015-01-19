@@ -43,8 +43,8 @@ Example of basic usage (getting all incomplete tasks in certain project):
     - naming (append colon on save)
 - Task
     - ~~addProject, removeProject~~
-    - functions for positioning? (addAfter, moveAfter?)
-- unit testing
+    - ~~functions for positioning? (addAfter, moveAfter?)~~
+- ~~unit testing~~
 - docs
 - ~~caching~~
 - ~~__init__.py~~

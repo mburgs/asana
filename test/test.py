@@ -101,6 +101,23 @@ class TaskTest(BaseTest):
 			self.api.requests
 		)
 
+	def test_move_to_section(self):
+		task = Task({
+			'id':1,
+			'projects': [{'id':3}, {'id':4}]
+		})
+
+		section = Section({
+			'id':2,
+			'projects': [{'id':4}, {'id':5}]
+		})
+
+		task.move_to_section(section)
+
+		self.assertIn(
+			('post', 'tasks/1/addProject', {'data': {'project': 4, 'insertAfter': 2}}),
+			self.api.requests
+		)
 
 
 if __name__ == "__main__":
