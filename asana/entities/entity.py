@@ -241,4 +241,7 @@ class Entity(object):
 		return hash(self.id if hasattr(self, 'id') else frozenset(self._data.items()))
 
 	def __eq__(self, other):
-		return self.id == other.id if hasattr(self, 'id') else cmp(self._data, other._data)
+		return (
+			type(self) is type(other) and
+			self.id == other.id if hasattr(self, 'id') else cmp(self._data, other._data)
+		)

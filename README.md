@@ -33,6 +33,13 @@ Example of basic usage (getting all incomplete tasks in certain project):
 	
 	tasks = myproject.get_subitem(Task, {'completed_since': 'now'})
 
+### Testing
+
+There are tests under the `test` folder using `unittest`. Just run with `test.py` it should work from any directory
+
+For coverage reports (from base of repo):
+`coverage run --source=asana --omit=asana/asana.py ./test/test.py`
+
 ### Todo
 - finish todo
 - implement save()

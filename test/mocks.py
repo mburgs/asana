@@ -7,10 +7,12 @@ class ApiMock():
 	def get(self, target, **kwargs):
 		self._savecall('get', target, **kwargs)
 
-		return []
+		return {}
 
 	def post(self, target, **kwargs):
 		self._savecall('post', target, **kwargs)
+
+		return {}
 
 	def put(self, target, **kwargs):
 		self._savecall('put', target, **kwargs)

@@ -63,10 +63,55 @@ class ProjectTest(BaseTest):
 			self.api.requests
 		)
 
+	def test_add_task(self):
+		"""Tests adding an existing and new task to this project"""
+
+		existing = Task({'id': 1})
+		new = Task({'name': 'new'})
+
+		project = Project({'id': 2, 'workspace': {'id': 3}})
+
+		project.add_task(existing)
+
+		self.assertIn(
+			('post', 'tasks/1/addProject', {'data': {'project': 2}}),
+			self.api.requests
+		)
+
+		project.add_task(new)
+
+		self.assertIn(
+			('post', 'tasks', {'data': {'projects': [2], 'name': 'new', 'workspace': 3}}),
+			self.api.requests
+		)
+
 class SectionTest(BaseTest):
 	def test_endpoint_correct(self):
 		"""Test section endpoint uses tasks"""
 		self.assertEqual(Section._get_api_endpoint(), 'tasks')
+
+	def test_custom_build_result(self):
+		"""Test that the custom result handling works"""
+
+		taskinsection = {'name': 'a task in section'}
+
+		testdata = [
+			{'name': 'a test task'},
+			{'name': 'Not the section:'},
+			{'name': 'a task not in section'},
+			{'name': 'test section:', 'id': 1},
+			taskinsection
+		]
+
+		result = Section._build_result({
+			'name': lambda n: 'test' in n
+		}, testdata)
+
+		self.assertEqual(len(result), 1)
+
+		self.assertEqual(result[0].id, 1)
+
+		self.assertIn(Task(taskinsection), result[0].subtasks)
 
 class TaskTest(BaseTest):
 	def test_addremove_project(self):
