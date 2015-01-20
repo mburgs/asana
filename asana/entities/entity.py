@@ -218,6 +218,7 @@ class Entity(object):
 			return self._childrenValues[attr]
 
 		if attr != 'id':
+			#todo throw standard exception for no property
 			raise Exception("Could not locate key " + attr)
 
 	def __setattr__(self, attr, value):
@@ -241,7 +242,10 @@ class Entity(object):
 		return hash(self.id if hasattr(self, 'id') else frozenset(self._data.items()))
 
 	def __eq__(self, other):
-		return (
-			type(self) is type(other) and
-			self.id == other.id if hasattr(self, 'id') else cmp(self._data, other._data)
-		)
+		if type(self) is not type(other):
+			return False
+
+		if self.id:
+			return self.id == other.id
+		else:
+			return cmp(self._data, other._data) == 0

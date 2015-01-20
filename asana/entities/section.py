@@ -21,7 +21,6 @@ class Section(task.Task):
 		is considered a subtask
 		"""
 		current = None
-		filling = False
 		ret = []
 
 		for ent in data:

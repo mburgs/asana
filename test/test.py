@@ -49,6 +49,18 @@ class EntityTest(BaseTest):
 
 		self.assertEqual(user.id, 'new')
 
+	def test_equality(self):
+		taskname1 = Task({'name': 'a'})
+		taskname2 = Task({'name': 'b'})
+		taskid1 = Task({'id': 1})
+		taskid2 = Task({'id': 2})
+
+		self.assertTrue(taskname1.__eq__(taskname1))
+		self.assertTrue(taskid1.__eq__(taskid1))
+
+		self.assertFalse(taskname1.__eq__(taskname2))
+		self.assertFalse(taskid1.__eq__(taskid2))
+
 class ProjectTest(BaseTest):
 	def test_endpoint_correct(self):
 		self.assertEqual(Project._get_api_endpoint(), 'projects')
@@ -93,14 +105,17 @@ class SectionTest(BaseTest):
 	def test_custom_build_result(self):
 		"""Test that the custom result handling works"""
 
-		taskinsection = {'name': 'a task in section'}
+		taskinsection = {'name': 'a task in section', 'id': 2}
+		notinsection = {'name': 'a task not in section', 'id': 3}
 
 		testdata = [
 			{'name': 'a test task'},
 			{'name': 'Not the section:'},
-			{'name': 'a task not in section'},
+			notinsection,
 			{'name': 'test section:', 'id': 1},
-			taskinsection
+			taskinsection,
+			{'name': 'Not the section:'},
+			notinsection
 		]
 
 		result = Section._build_result({
@@ -112,6 +127,8 @@ class SectionTest(BaseTest):
 		self.assertEqual(result[0].id, 1)
 
 		self.assertIn(Task(taskinsection), result[0].subtasks)
+
+		self.assertNotIn(Task(notinsection), result[0].subtasks)
 
 class TaskTest(BaseTest):
 	def test_addremove_project(self):
