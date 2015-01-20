@@ -68,17 +68,24 @@ class Task(Entity):
 			data=data
 		)
 
-	def move_to_section(self, section):
-		"""Moves this task to a section with the assumption that the task and
-		section already share a project. If they share multiple projects it
-		will use the first one found
+	def add_to_section(self, section):
+		"""Moves this task to a section
+
+		If this task and the section share one or more projects the first one
+		found is used. If they don't the first project in the section is used
 
 		:param section The section to move to
 		"""
+
+		sharedProjects = set(self.projects) & set(section.projects)
+
+		if len(sharedProjects):
+			pId = sharedProjects.pop()
+		else:
+			pId = section.projects[0]
 		
 		return self._edit_project(
 			'addProject',
-			# get first project that task and section share
-			(set(self.projects) & set(section.projects)).pop(),
-			{'insertAfter': section.id}
+			pId,
+			{'insert_after': section.id}
 		)
