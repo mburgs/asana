@@ -71,6 +71,16 @@ class Entity(object):
 		cls.api = api
 
 	@classmethod
+	def from_link(cls, link):
+		"""Builds an object from a link to it
+		This works by assuming the last section of the link is the ID"""
+		
+		if not link:
+			return None
+
+		return cls({'id': link.split('/')[-1]})
+
+	@classmethod
 	def _get_api(cls):
 		if not cls.api:
 			raise EntityException('The api must be set using Entity.set_api()')
