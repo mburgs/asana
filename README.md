@@ -33,6 +33,8 @@ Example of basic usage (getting all incomplete tasks in certain project):
 	
 	tasks = myproject.get_subitem(Task, {'completed_since': 'now'})
 
+See `examples/` for more
+
 ### Testing
 
 There are tests under the `test` folder using `unittest`. Just run with `test.py` it should work from any directory
