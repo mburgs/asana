@@ -41,9 +41,7 @@ class Entity(object):
 			internally
 		"""
 		if merge:
-			for key, value in data.items():
-				if key not in self._data or key == 'id':
-					self._data[key] = value
+			self._data.update(data)
 		else:
 			self._data = data
 			self._dirty = set()
