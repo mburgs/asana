@@ -62,16 +62,16 @@ class EntityTest(BaseTest):
 		self.assertFalse(taskid1.__eq__(taskid2))
 
 	def test_from_link(self):
-		user = User.from_link('https://example.com/0/23/1')
+		task = Task.from_link('https://example.com/0/23/1')
 
-		user.load()
+		task.load()
 
 		self.assertIn(
-			('get', 'users/1', {}),
+			('get', 'tasks/1', {}),
 			self.api.requests
 		)
 
-		self.assertEqual(User.from_link(None), None)
+		self.assertEqual(Task.from_link(None), None)
 
 class ProjectTest(BaseTest):
 	def test_endpoint_correct(self):

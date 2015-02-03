@@ -2,14 +2,9 @@
 
 from setuptools import setup, find_packages
 
-install_requires = []
+install_requires = ["requests"]
 
-try:
-    import requests
-except ImportError:
-    install_requires.append("requests")
-
-name = "asana"
+name = "asanorm"
 
 setup(
     name = name,
@@ -18,7 +13,7 @@ setup(
     author_email = "burgercho@gmail.com",
     description = "Asana API wrapper with an ORM interface",
     license = "Apache License, (2.0)",
-    keywords = "asana",
+    keywords = "asana,api,orm",
     url = "http://github.com/mburgs/asana",
     packages=find_packages(),
     classifiers=[
