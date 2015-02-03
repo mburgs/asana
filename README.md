@@ -43,23 +43,14 @@ For coverage reports (from base of repo):
 `coverage run --source=asana --omit=asana/asana.py ./test/test.py`
 
 ### Todo
-- finish todo
-- implement save()
-    - ~~update~~
-    - ~~create~~
 - implement Section
     - ~~subtasks~~
     - naming (append colon on save)
 - Task
-    - ~~addProject, removeProject~~
-    - ~~functions for positioning? (addAfter, moveAfter?)~~
+    - use expand= options for project.section (see http://stackoverflow.com/questions/26937179/how-to-retrieve-tasks-by-section-using-asana-api)
 - ~~unit testing~~
 - docs
-- ~~caching~~
-- ~~__init__.py~~
-- regex matching for field types:
-    - ~~handle array values~~
-- ~~filter out sections from task lists~~
+- examples
 - relationships
     - child/parent, instead of get_subitem implement magic methods
     - for adding project, tag, follower to task implement magic methods

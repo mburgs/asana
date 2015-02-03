@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
 from setuptools import setup, find_packages
-from asana import __version__ as version
 
 install_requires = []
 
@@ -14,7 +13,7 @@ name = "asana"
 
 setup(
     name = name,
-    version = version,
+    version = "0.1.1",
     author = "Michoel Burger",
     author_email = "burgercho@gmail.com",
     description = "Asana API wrapper with an ORM interface",
