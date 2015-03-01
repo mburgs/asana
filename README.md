@@ -37,7 +37,9 @@ See `examples/` for more
 
 ### Testing
 
-There are tests under the `test` folder using `unittest`. Just run with `test.py` it should work from any directory
+There are tests under the `test` folder using `unittest`. Just run with `test.py`
+
+For coverage reports run `coverage run --source=asana --omit=asana/asana.py ./test/test.py && coverage report`
 
 For coverage reports (from base of repo):
 `coverage run --source=asana --omit=asana/asana.py ./test/test.py`
@@ -48,7 +50,6 @@ For coverage reports (from base of repo):
     - naming (append colon on save)
 - Task
     - use expand= options for project.section (see http://stackoverflow.com/questions/26937179/how-to-retrieve-tasks-by-section-using-asana-api)
-- ~~unit testing~~
 - docs
 - examples
 - relationships

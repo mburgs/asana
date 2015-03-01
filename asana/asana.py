@@ -28,6 +28,11 @@ class AsanaAPI(object):
     """
 
     def __init__(self, apikey, debug=False, cache=None):
+        """Initializes the API
+        :param apikey: the API from Asana
+        :param debug: If true will print out requests
+        :param cache: If true will cache GET responses for the life of the script. If a number will only cache for that many seconds
+        """
         self.debug = debug
 
         if cache:
