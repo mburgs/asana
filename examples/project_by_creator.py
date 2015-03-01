@@ -1,6 +1,6 @@
 #! /usr/bin/python
 
-from asana import *
+from asana import Entity, AsanaAPI, Project, Section
 
 import re, argparse
 
@@ -20,7 +20,7 @@ Entity.set_api(AsanaAPI(options.api_key, debug=True, cache=True))
 print 'Loading projects and tasks...'
 
 projects = Project.find({
-	'name': lambda n: re.search(options.projects, n)
+	'name': lambda n: re.search(options.project_regex, n)
 })
 
 tasks = []
