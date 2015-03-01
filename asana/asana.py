@@ -27,11 +27,12 @@ class AsanaAPI(object):
     itself see: http://developer.asana.com/documentation/
     """
 
-    def __init__(self, apikey, debug=False, cache=None):
+    def __init__(self, apikey, debug=False, cache=None, dry_run=False):
         """Initializes the API
         :param apikey: the API from Asana
         :param debug: If true will print out requests
         :param cache: If true will cache GET responses for the life of the script. If a number will only cache for that many seconds
+        :param dry_run: If true will prevent any POST, PUT or DELETE requests from executing
         """
         self.debug = debug
 
@@ -39,6 +40,8 @@ class AsanaAPI(object):
             self.cache = Cache(cache)
         else:
             self.cache = False
+
+        self.dry_run = dry_run
 
         self.asana_url = "https://app.asana.com/api"
         self.api_version = "1.0"
@@ -140,6 +143,9 @@ class AsanaAPI(object):
             for arg in ['params', 'data', 'files']:
                 if kwargs.get(arg):
                     print '\t{0} => {1}'.format(arg, kwargs[arg])
+
+        if self.dry_run and method != 'get':
+            return {}
 
         r = getattr(requests, method)(target, auth=(self.apikey, ""), **kwargs)
         if self._ok_status(r.status_code) and r.status_code is not 404:
