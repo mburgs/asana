@@ -34,6 +34,10 @@ class GeneralTest(BaseTest):
 			for cls in [Task, Section]:
 				self.assertEqual(cls._is_section(ent), truth)
 
+	def test_empty_name_section_check(self):
+		for cls in [Task, Section]:
+			self.assertEqual(bool(cls._is_section({'name':''})), False) 
+
 class EntityTest(BaseTest):
 	def test_entity_data_getter(self):
 		"""Ensure data saved in is accessible"""

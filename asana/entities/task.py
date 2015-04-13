@@ -39,7 +39,7 @@ class Task(Entity):
 
 	@staticmethod
 	def _is_section_name(name):
-		return name[-1] == ':'
+		return name and name[-1] == ':'
 
 	def is_section(self):
 		return self._is_section_name(self.name)
